@@ -7,6 +7,7 @@ import SessionProvider from "../components/SessionProvider";
 import { getServerSession } from "next-auth";
 import { authOptions } from "../pages/api/auth/[...nextauth]";
 import type { Metadata } from "next";
+import SideBar from "../components/SideBar";
 
 export const metadata: Metadata = {
   title: "cookGPT",
@@ -32,6 +33,7 @@ export default async function RootLayout({
             <Login />
           ) : (
             <div className="flex">
+              <SideBar />
               <div className="bg-[#343541] flex-1">{children}</div>
             </div>
           )}
