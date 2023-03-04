@@ -1,9 +1,11 @@
 import { SunIcon } from "@heroicons/react/24/outline";
+import CookGPTLogo from "../public/assets/svg/CookGPTLogo";
 
 function HomePage() {
   return (
     <div className="flex flex-col items-center justify-center h-screen px-2 text-white">
-      <h1 className="mb-20 text-5xl font-bold">cookGPT</h1>
+      <CookGPTLogo size={250} />
+      <h1 className="my-20 text-5xl font-bold">cookGPT</h1>
 
       <div>
         <div>
@@ -12,7 +14,7 @@ function HomePage() {
             <h2>Examples</h2>
           </div>
 
-          <div className="grid grid-cols-3 gap-2 text-center">
+          <div className="grid grid-cols-3 gap-2 text-center ">
             <p className="exampleText">Lemon Pasta</p>
             <p className="exampleText">Mousaka</p>
             <p className="exampleText">Greek Lamb Kleftiko</p>
