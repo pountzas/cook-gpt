@@ -3,7 +3,7 @@ import {
   ListBulletIcon,
   TrashIcon
 } from "@heroicons/react/24/outline";
-import { collection } from "firebase/firestore";
+import { collection, deleteDoc, doc } from "firebase/firestore";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
@@ -31,6 +31,11 @@ function RecipeItem({ id }: RecipeItemProps) {
     setActive(pathname === `/recipes/${id}`);
   }, [pathname]);
 
+  const removeRecipe = async () => {
+    await deleteDoc(doc(db, "users", session?.user?.email!, "recipes", id));
+    router.replace("/");
+  };
+
   return (
     <Link
       className={`flex items-center justify-between px-4 cookRow ${
@@ -46,7 +51,10 @@ function RecipeItem({ id }: RecipeItemProps) {
           {recipes?.docs[recipes.docs.length - 1]?.data().title || "New Recipe"}
         </p>
       </div>
-      <TrashIcon className="w-5 h-5 text-gray-500 cursor-pointer hover:text-red-700" />
+      <TrashIcon
+        onClick={removeRecipe}
+        className="w-5 h-5 text-gray-500 cursor-pointer hover:text-red-700"
+      />
     </Link>
   );
 }
