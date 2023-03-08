@@ -2,16 +2,27 @@
 
 import { useSession, signOut } from "next-auth/react";
 import NewRecipe from "./NewRecipe";
+import RecipeItem from "./RecipeItem";
+import { useCollection } from "react-firebase-hooks/firestore";
+import { collection } from "firebase/firestore";
+import { db } from "../firebase";
 
 function SideBar() {
   const { data: session } = useSession();
+
+  const [recipes, loading, error] = useCollection(
+    session && collection(db, "users", session.user?.email!, "recipes")
+  );
 
   return (
     <div className="flex flex-col h-screen p-2 ">
       <div className="flex-1">
         <div>
           <NewRecipe />
-          <div>map recipe selection</div>
+
+          {recipes?.docs.map((recipe) => (
+            <RecipeItem key={recipe.id} id={recipe.id} />
+          ))}
         </div>
       </div>
 
