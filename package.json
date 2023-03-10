@@ -7,6 +7,7 @@
   },
   "dependencies": {
     "@heroicons/react": "^2.0.16",
+    "encoding": "^0.1.13",
     "firebase": "^9.17.2",
     "framer-motion": "^10.2.3",
     "next": "latest",
