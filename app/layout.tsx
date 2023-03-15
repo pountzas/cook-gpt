@@ -13,8 +13,15 @@ import SideBar from "../components/SideBar";
 export const metadata: Metadata = {
   title: "cookGPT",
   description:
-    "Search for recipies using a hashtag or a post url from social media",
-  keywords: ["recipes", "food", "hashtag", "recipe post url", "cookGPT"],
+    "Search for recipes using a hashtag or a post url from social media with the power of openAI",
+  keywords: [
+    "recipes",
+    "food",
+    "hashtag",
+    "recipe post url",
+    "cookGPT",
+    "Generate food recipes"
+  ],
   creator: "Nikos Pountzas"
 };
 
