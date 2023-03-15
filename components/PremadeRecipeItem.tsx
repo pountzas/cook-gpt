@@ -17,10 +17,10 @@ type Props = {
 
 function PremadeRecipeItem({ key, name, instructions, ingredients }: Props) {
   const [mainTitle, setMainTitle] = useRecoilState(mainTitleAtom);
-  const [premadeIngredients, setPremadeIngredients] = useRecoilState(
+  const [premadeIngredients, setPremadeIngredients]: any[] = useRecoilState(
     premadeIngredientsAtom
   );
-  const [premadeInstructions, setPremadeInstructions] = useRecoilState(
+  const [premadeInstructions, setPremadeInstructions]: any[] = useRecoilState(
     premadeInstructionsAtom
   );
 
