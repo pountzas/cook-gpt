@@ -29,8 +29,8 @@ function RecipeBody({ id }: Props) {
     setIsMounted(true);
     return () => {
       setIsMounted(false);
-      setPremadeIngredients([]);
-      setPremadeInstructions([]);
+      // setPremadeIngredients([]);
+      // setPremadeInstructions([]);
     };
   }, []);
 
