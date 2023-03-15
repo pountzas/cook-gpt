@@ -5,12 +5,16 @@ import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { addDoc, collection, serverTimestamp } from "firebase/firestore";
 import { db } from "../firebase";
+import { useRecoilState } from "recoil";
+import { mainTitleAtom } from "../atoms/dataAtom";
 
 function NewRecipe() {
+  const [mainTitle, setMainTitle] = useRecoilState(mainTitleAtom);
   const router = useRouter();
   const { data: session } = useSession();
 
   const createNewRecipe = async () => {
+    setMainTitle("New Recipe");
     const doc = await addDoc(
       collection(db, "users", session?.user?.email!, "recipes"),
       {
