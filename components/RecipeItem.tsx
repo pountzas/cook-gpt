@@ -11,7 +11,11 @@ import { useEffect, useState } from "react";
 import { useCollection } from "react-firebase-hooks/firestore";
 import { db } from "../firebase";
 import { useRecoilState } from "recoil";
-import { mainTitleAtom } from "../atoms/dataAtom";
+import {
+  mainTitleAtom,
+  premadeIngredientsAtom,
+  premadeInstructionsAtom
+} from "../atoms/dataAtom";
 
 type RecipeItemProps = {
   id: string;
@@ -20,6 +24,13 @@ type RecipeItemProps = {
 
 function RecipeItem({ id, title }: RecipeItemProps) {
   const [mainTitle, setMainTitle] = useRecoilState(mainTitleAtom);
+  const [premadeIngredients, setPremadeIngredients] = useRecoilState(
+    premadeIngredientsAtom
+  );
+  const [premadeInstructions, setPremadeInstructions] = useRecoilState(
+    premadeInstructionsAtom
+  );
+
   const pathname = usePathname();
   const router = useRouter();
   const { data: session } = useSession();
@@ -27,11 +38,9 @@ function RecipeItem({ id, title }: RecipeItemProps) {
 
   const handleMainTitle = () => {
     setMainTitle(title || "Recipe Generator");
+    setPremadeIngredients([]);
+    setPremadeInstructions([]);
   };
-
-  const [recipes] = useCollection(
-    collection(db, "users", session?.user?.email!, "recipes")
-  );
 
   useEffect(() => {
     if (!pathname) return;
