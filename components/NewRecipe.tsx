@@ -6,15 +6,28 @@ import { useRouter } from "next/navigation";
 import { addDoc, collection, serverTimestamp } from "firebase/firestore";
 import { db } from "../firebase";
 import { useRecoilState } from "recoil";
-import { mainTitleAtom } from "../atoms/dataAtom";
+import {
+  mainTitleAtom,
+  premadeIngredientsAtom,
+  premadeInstructionsAtom
+} from "../atoms/dataAtom";
 
 function NewRecipe() {
   const [mainTitle, setMainTitle] = useRecoilState(mainTitleAtom);
+  const [premadeIngredients, setPremadeIngredients] = useRecoilState(
+    premadeIngredientsAtom
+  );
+  const [premadeInstructions, setPremadeInstructions] = useRecoilState(
+    premadeInstructionsAtom
+  );
+
   const router = useRouter();
   const { data: session } = useSession();
 
   const createNewRecipe = async () => {
     setMainTitle("New Recipe");
+    setPremadeIngredients([]);
+    setPremadeInstructions([]);
     const doc = await addDoc(
       collection(db, "users", session?.user?.email!, "recipes"),
       {
