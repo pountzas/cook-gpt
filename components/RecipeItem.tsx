@@ -10,16 +10,24 @@ import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useCollection } from "react-firebase-hooks/firestore";
 import { db } from "../firebase";
+import { useRecoilState } from "recoil";
+import { mainTitleAtom } from "../atoms/dataAtom";
 
 type RecipeItemProps = {
   id: string;
+  title?: string;
 };
 
-function RecipeItem({ id }: RecipeItemProps) {
+function RecipeItem({ id, title }: RecipeItemProps) {
+  const [mainTitle, setMainTitle] = useRecoilState(mainTitleAtom);
   const pathname = usePathname();
   const router = useRouter();
   const { data: session } = useSession();
   const [active, setActive] = useState(false);
+
+  const handleMainTitle = () => {
+    setMainTitle(title || "Recipe Generator");
+  };
 
   const [recipes] = useCollection(
     collection(db, "users", session?.user?.email!, "recipes")
@@ -42,13 +50,14 @@ function RecipeItem({ id }: RecipeItemProps) {
         active && "bg-gray-700/50"
       }`}
       href={`/recipes/${id}`}
+      onClick={handleMainTitle}
     >
       <div className="space-x-2 fcc">
         {/* <ChatBubbleLeftIcon className="w-5 h-5 text-gray-500 cursor-pointer" /> */}
         <ListBulletIcon className="w-5 h-5 text-gray-500 cursor-pointer" />
         <p className="flex-1 hidden text-xs truncate md:inline-flex">
           {/* {"recipe"} */}
-          {recipes?.docs[recipes.docs.length - 1]?.data().title || "New Recipe"}
+          {title || "New Recipe"}
         </p>
       </div>
       <TrashIcon
