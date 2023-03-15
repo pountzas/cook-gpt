@@ -20,6 +20,16 @@ export const mainTitleAtom = atom({
   default: 'Recipe Generator',
 });
 
+export const premadeIngredientsAtom = atom({
+  key: 'premadeIngredientsAtom',
+  default: [],
+});
+
+export const premadeInstructionsAtom = atom({
+  key: 'premadeInstructionsAtom',
+  default: [],
+});
+
 export const chatGptErrorAtom = atom({
   key: 'chatGptErrorAtom',
   default: '',
