@@ -11,7 +11,7 @@ type RecipePageProps = {
 
 function RecipePage({ params: { id } }: RecipePageProps) {
   return (
-    <div className="flex flex-col items-center justify-between h-screen py-8 overflow-hidden">
+    <div className="flex flex-col items-center justify-between h-screen py-8 overflow-hidden relative">
       <HomeButton />
       <RecipeTitle id={id} />
       <RecipeBody id={id} />
