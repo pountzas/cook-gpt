@@ -11,8 +11,6 @@ import {
 type Props = {
   key: number;
   name: string;
-  // aray of strings
-
   instructions: never[];
   ingredients: never[];
 };

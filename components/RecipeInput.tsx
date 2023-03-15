@@ -25,7 +25,7 @@ function RecipeInput({ id }: Props) {
 
   return (
     <div className="text-sm w-[50%] text-gray-400 ">
-      <div className="rounded-lg bg-gray-700/50">
+      <div className="rounded-lg shadow-lg bg-gray-700/50">
         <form onSubmit={(e) => handlePromtType} className="flex p-5 space-x-5">
           <input
             className="flex-1 bg-transparent focus:outline-none disabled:cursor-not-allowed disabled:text-gray-300"

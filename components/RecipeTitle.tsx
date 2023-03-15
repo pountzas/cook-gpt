@@ -32,7 +32,7 @@ function RecipeTitle({ id }: Props) {
   }, [mainTitle]);
 
   return (
-    <div>
+    <div className="flex-1">
       {headerTitleArray?.map((letter, index) => {
         return (
           <motion.span
@@ -40,7 +40,7 @@ function RecipeTitle({ id }: Props) {
             animate={{ opacity: 1, y: 0, z: 0 }}
             transition={{ delay: index * 0.1 }}
             key={index}
-            className="inline-block"
+            className="inline-block text-gray-200 text-2xl font-bold"
           >
             {letter === " " ? "\u00A0" : letter}
           </motion.span>

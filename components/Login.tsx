@@ -6,7 +6,7 @@ import CookGPTLogo from "../public/assets/svg/CookGPTLogo";
 
 export default function Login() {
   return (
-    <section className="bg-gray-800 min-h-[100vh]">
+    <section className="bg-[#343541] min-h-[100vh]">
       <div className="flex flex-col items-center justify-center pt-48 text-center">
         <CookGPTLogo size={150} />
         <p className="pt-20 italic text-gray-200 font-xs">
