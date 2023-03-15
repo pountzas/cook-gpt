@@ -25,7 +25,11 @@ function SideBar() {
           <NewRecipe />
 
           {recipes?.docs.map((recipe) => (
-            <RecipeItem key={recipe.id} id={recipe.id} />
+            <RecipeItem
+              key={recipe.id}
+              id={recipe.id}
+              title={recipe.data().title}
+            />
           ))}
         </div>
       </div>
