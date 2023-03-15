@@ -1,7 +1,7 @@
-import { SunIcon } from "@heroicons/react/24/outline";
 import { premadeRecipies } from "../lib/premadeRecipies";
 import Logo from "../components/Logo";
 import PremadeRecipeItem from "../components/PremadeRecipeItem";
+import SunMotion from "../components/SunMotion";
 
 function HomePage() {
   return (
@@ -11,10 +11,7 @@ function HomePage() {
 
       <div>
         <div>
-          <div className="flex flex-col items-center justify-center mb-5">
-            <SunIcon className="w-8 h-8" />
-            <h2>Examples</h2>
-          </div>
+          <SunMotion />
 
           <div className="grid grid-cols-3 gap-2 text-center ">
             {premadeRecipies.map((recipe) => (

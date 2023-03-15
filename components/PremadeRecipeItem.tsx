@@ -11,8 +11,8 @@ import {
 type Props = {
   key: number;
   name: string;
-  instructions: never[];
-  ingredients: never[];
+  instructions: string[] | void;
+  ingredients: string[] | void;
 };
 
 function PremadeRecipeItem({ key, name, instructions, ingredients }: Props) {
