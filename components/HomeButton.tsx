@@ -3,7 +3,7 @@
 import { HomeModernIcon } from "@heroicons/react/24/solid";
 import { useRouter } from "next/navigation";
 import React from "react";
-import { motion } from "framer-motion";
+import { motion, spring } from "framer-motion";
 import {
   premadeIngredientsAtom,
   premadeInstructionsAtom
@@ -27,8 +27,8 @@ function HomeButton() {
 
   return (
     <motion.div
-      initial={{ opacity: 0, x: -100 }}
-      animate={{ opacity: 1, x: 0 }}
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
       onClick={handleHomeButton}
       className="pt-8  "
     >
