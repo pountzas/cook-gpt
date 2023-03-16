@@ -9,7 +9,7 @@ type Props = {
 };
 
 function RecipeInput({ id }: Props) {
-  const [prompt, setPrompt] = useState("");
+  const [prompt, setPrompt] = useState<string>("");
   const { data: session } = useSession();
 
   const handlePromtType = (e: FormEvent<HTMLFormElement>) => {

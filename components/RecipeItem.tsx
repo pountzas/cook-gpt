@@ -34,7 +34,7 @@ function RecipeItem({ id, title }: RecipeItemProps) {
   const pathname = usePathname();
   const router = useRouter();
   const { data: session } = useSession();
-  const [active, setActive] = useState(false);
+  const [active, setActive] = useState<boolean>(false);
 
   const handleMainTitle = () => {
     setMainTitle(title || "Recipe Generator");

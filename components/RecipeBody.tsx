@@ -17,7 +17,7 @@ type Props = {
 
 function RecipeBody({ id }: Props) {
   const { data: session } = useSession();
-  const [isMounted, setIsMounted] = useState(false);
+  const [isMounted, setIsMounted] = useState<boolean>(false); //
   const [premadeIngredients, setPremadeIngredients] = useRecoilState(
     premadeIngredientsAtom
   );
@@ -29,10 +29,8 @@ function RecipeBody({ id }: Props) {
     setIsMounted(true);
     return () => {
       setIsMounted(false);
-      // setPremadeIngredients([]);
-      // setPremadeInstructions([]);
     };
-  }, []);
+  }, []); //
 
   const [recipes] = useCollection(
     session && query(collection(db, "users", session?.user?.email!, "recipes"))
@@ -40,7 +38,10 @@ function RecipeBody({ id }: Props) {
 
   return (
     <div className="grid gap-8 md:grid-cols-2 pb-8">
-      <div className="bg-gray-700/50 shadow-lg rounded-lg h-[50vh] w-[30vw] p-4">
+      <div className="bg-gray-700/50 shadow-lg rounded-lg h-[50vh] w-[30vw] p-6">
+        <h3 className="text-center text-xl font-semibold text-gray-200 pb-2">
+          Ingredients
+        </h3>
         {premadeIngredients.length == 0
           ? recipes?.docs.map(
               (recipe) =>
@@ -59,7 +60,10 @@ function RecipeBody({ id }: Props) {
               </p>
             ))}
       </div>
-      <div className="bg-gray-700/50 shadow-lg rounded-lg h-[50vh] w-[30vw] p-4">
+      <div className="bg-gray-700/50 shadow-lg rounded-lg h-[50vh] w-[30vw] p-6">
+        <h3 className="text-center text-xl font-semibold text-gray-200 pb-2">
+          Instructions
+        </h3>
         {premadeInstructions.length == 0
           ? recipes?.docs.map(
               (recipe) =>

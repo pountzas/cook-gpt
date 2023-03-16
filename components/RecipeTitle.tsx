@@ -12,7 +12,7 @@ type Props = {
 function RecipeTitle({ id }: Props) {
   const [mainTitle, setMainTitle] = useRecoilState(mainTitleAtom);
   const [headerTitleArray, setHeaderTitleArray] = useState<string[]>([]);
-  const [headerTitle, setHeaderTitle] = useState("");
+  const [headerTitle, setHeaderTitle] = useState<string>("");
 
   useEffect(() => {
     setHeaderTitle(mainTitle);
