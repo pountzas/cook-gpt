@@ -1,4 +1,4 @@
-import { premadeRecipies } from "../lib/premadeRecipies";
+import { premadeRecipes } from "../lib/premadeRecipes";
 import Logo from "../components/Logo";
 import PremadeRecipeItem from "../components/PremadeRecipeItem";
 import SunMotion from "../components/SunMotion";
@@ -14,7 +14,7 @@ function HomePage() {
           <SunMotion />
 
           <div className="grid grid-cols-3 gap-2 text-center ">
-            {premadeRecipies.map((recipe) => (
+            {premadeRecipes.map((recipe) => (
               <PremadeRecipeItem
                 key={recipe.id}
                 name={recipe.name}
