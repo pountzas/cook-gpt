@@ -1,8 +1,12 @@
 "use client";
 
 import { PaperAirplaneIcon } from "@heroicons/react/24/solid";
+import { collection, orderBy, query } from "firebase/firestore";
 import { useSession } from "next-auth/react";
-import { FormEvent, useState } from "react";
+import { FormEvent, useEffect, useState } from "react";
+import { useCollection } from "react-firebase-hooks/firestore";
+import { db } from "../firebase";
+import getGptRecipeFromPromt from "../lib/getGptRecipeFromPromt";
 
 type Props = {
   id: string;
@@ -10,7 +14,27 @@ type Props = {
 
 function RecipeInput({ id }: Props) {
   const [prompt, setPrompt] = useState<string>("");
+  const [hidden, setHidden] = useState<boolean>(true);
   const { data: session } = useSession();
+
+  const [recipes, loading, error] = useCollection(
+    session &&
+      query(
+        collection(db, "users", session.user?.email!, "recipes"),
+        orderBy("createdAt", "desc")
+      )
+  );
+
+  useEffect(() => {
+    if (!recipes) return;
+
+    const recipe = recipes.docs.find((recipe) => recipe.id === id);
+    if (recipe?.data().title === "") {
+      setHidden(false);
+    } else {
+      setHidden(true);
+    }
+  }, [recipes]);
 
   const handlePromtType = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -20,11 +44,13 @@ function RecipeInput({ id }: Props) {
     if (prompt.includes("https://")) {
     } else {
       // if prompt is a string
+
+      getGptRecipeFromPromt(prompt);
     }
   };
 
   return (
-    <div className="text-sm w-[50%] text-gray-400 ">
+    <div hidden={hidden} className="text-sm w-[50%] text-gray-400 ">
       <div className="rounded-lg shadow-lg bg-gray-700/50">
         <form onSubmit={(e) => handlePromtType} className="flex p-5 space-x-5">
           <input
@@ -33,7 +59,7 @@ function RecipeInput({ id }: Props) {
             value={prompt}
             onChange={(e) => setPrompt(e.target.value)}
             type="text"
-            placeholder="Enter a food name or a URL of a post with a food name."
+            placeholder="Enter a food # or a URL of a post with a food name."
           />
 
           <button
