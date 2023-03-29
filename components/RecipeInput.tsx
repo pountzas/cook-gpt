@@ -22,6 +22,7 @@ type Props = {
 
 function RecipeInput({ id }: Props) {
   const [prompt, setPrompt] = useState<string>("");
+  const [replyFromGpt, setReplyFromGpt] = useState<string>("");
   const [hidden, setHidden] = useState<boolean>(true);
 
   const router = useRouter();
@@ -46,7 +47,7 @@ function RecipeInput({ id }: Props) {
     }
   }, [recipes]);
 
-  const handlePromtType = (e: FormEvent<HTMLFormElement>) => {
+  const handlePromtType = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     // when promt allready exist in firebase redirect to the id recipe page
     if (recipes?.docs.find((recipe) => recipe.data().prompt === prompt)) {
@@ -64,9 +65,23 @@ function RecipeInput({ id }: Props) {
     // if prompt is a url
     if (prompt.includes("https://")) {
     } else {
-      // if prompt is a string
+      const recipe: Recipe = {
+        id: id,
+        title: "test",
+        prompt: prompt,
+        ingredients: ["test"],
+        instructions: ["test"]
+        // updatedAt: serverTimestamp()
+      };
 
-      getGptRecipeFromPromt(prompt);
+      const recipeRef = doc(db, "users", session?.user?.email!, "recipes", id);
+      updateDoc(recipeRef, recipe)
+        .then(() => {
+          console.log("Document written with ID: ");
+        })
+        .catch((error) => {
+          console.error("Error adding document: ", error);
+        });
     }
   };
 
