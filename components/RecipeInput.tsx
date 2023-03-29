@@ -1,8 +1,16 @@
 "use client";
 
 import { PaperAirplaneIcon } from "@heroicons/react/24/solid";
-import { collection, orderBy, query } from "firebase/firestore";
+import {
+  collection,
+  orderBy,
+  query,
+  doc,
+  updateDoc,
+  deleteDoc
+} from "firebase/firestore";
 import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
 import { FormEvent, useEffect, useState } from "react";
 import { useCollection } from "react-firebase-hooks/firestore";
 import { db } from "../firebase";
@@ -15,6 +23,8 @@ type Props = {
 function RecipeInput({ id }: Props) {
   const [prompt, setPrompt] = useState<string>("");
   const [hidden, setHidden] = useState<boolean>(true);
+
+  const router = useRouter();
   const { data: session } = useSession();
 
   const [recipes, loading, error] = useCollection(
@@ -38,6 +48,17 @@ function RecipeInput({ id }: Props) {
 
   const handlePromtType = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    // when promt allready exist in firebase redirect to the id recipe page
+    if (recipes?.docs.find((recipe) => recipe.data().prompt === prompt)) {
+      const recipeId = recipes.docs.find(
+        (recipe) => recipe.data().prompt === prompt
+      )?.id;
+
+      console.log("redirect to recipe page", recipeId);
+      router.push(`/recipes/${recipeId}`);
+      await deleteDoc(doc(db, "users", session?.user?.email!, "recipes", id));
+      return;
+    }
     if (!prompt) return;
 
     // if prompt is a url
@@ -52,7 +73,10 @@ function RecipeInput({ id }: Props) {
   return (
     <div hidden={hidden} className="text-sm w-[50%] text-gray-400 ">
       <div className="rounded-lg shadow-lg bg-gray-700/50">
-        <form onSubmit={(e) => handlePromtType} className="flex p-5 space-x-5">
+        <form
+          onSubmit={(e) => handlePromtType(e)}
+          className="flex p-5 space-x-5"
+        >
           <input
             className="flex-1 bg-transparent focus:outline-none disabled:cursor-not-allowed disabled:text-gray-300"
             disabled={!session}
