@@ -57,6 +57,56 @@ function RecipeInput({ id }: Props) {
     }
   }, [recipes]);
 
+  useEffect(() => {
+    const errorMatch = replyFromGpt?.includes("Error");
+    setGptError(errorMatch ? true : false);
+    console.log(gptError);
+    if (!gptError) {
+      const titleMatch = replyFromGpt?.match(/Title: (.*)\n/);
+      setGptTitle(titleMatch ? titleMatch[1] : "");
+
+      const ingredientsMatch = replyFromGpt?.match(
+        /Ingredients:([\s\S]*?)Instructions/
+      );
+      let ingredients = ingredientsMatch ? ingredientsMatch[1].trim() : "";
+
+      const instructionsMatch = replyFromGpt?.match(/Instructions:[\s\S]*/);
+      let instructions = instructionsMatch
+        ? instructionsMatch[0].replace("Instructions:", "").trim()
+        : "";
+
+      if (ingredients) {
+        setGptIngredientsArray(ingredients.split("\n"));
+      }
+
+      if (instructions) {
+        setGptInstructionsArray(instructions.split("\n"));
+      }
+    }
+    setGptError(false);
+  }, [replyFromGpt]);
+
+  useEffect(() => {
+    if (gptTitle && gptIngredientsArray.length && gptInstructionsArray.length) {
+      const recipe: Recipe = {
+        id: id,
+        title: gptTitle,
+        prompt: prompt,
+        ingredients: gptIngredientsArray,
+        instructions: gptInstructionsArray
+      };
+
+      console.log(recipe);
+
+      const recipeRef = doc(db, "users", session?.user?.email!, "recipes", id);
+      updateDoc(recipeRef, recipe);
+
+      setTimeout(() => {
+        setMainTitle(gptTitle);
+      }, 1000);
+    }
+  }, [gptTitle, gptIngredientsArray, gptInstructionsArray]);
+
   const handlePromtType = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!prompt) return;
