@@ -11,10 +11,13 @@ import {
 } from "firebase/firestore";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
+import { Configuration, OpenAIApi } from "openai";
 import { FormEvent, useEffect, useState } from "react";
 import { useCollection } from "react-firebase-hooks/firestore";
+import { useRecoilState } from "recoil";
+import { mainTitleAtom } from "../atoms/dataAtom";
 import { db } from "../firebase";
-import getGptRecipeFromPromt from "../lib/getGptRecipeFromPromt";
+// import getGptRecipeFromPromt from "../lib/getGptRecipeFromPromt";
 
 type Props = {
   id: string;
@@ -22,8 +25,15 @@ type Props = {
 
 function RecipeInput({ id }: Props) {
   const [prompt, setPrompt] = useState<string>("");
-  const [replyFromGpt, setReplyFromGpt] = useState<string>("");
+  const [replyFromGpt, setReplyFromGpt] = useState<string | undefined>("");
   const [hidden, setHidden] = useState<boolean>(true);
+  const [gptError, setGptError] = useState<boolean>(false);
+  const [gptTitle, setGptTitle] = useState<string>("");
+  const [gptIngredientsArray, setGptIngredientsArray] = useState<string[]>([]);
+  const [gptInstructionsArray, setGptInstructionsArray] = useState<string[]>(
+    []
+  );
+  const [mainTitle, setMainTitle] = useRecoilState(mainTitleAtom);
 
   const router = useRouter();
   const { data: session } = useSession();
@@ -49,39 +59,40 @@ function RecipeInput({ id }: Props) {
 
   const handlePromtType = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    // when promt allready exist in firebase redirect to the id recipe page
+    if (!prompt) return;
+    // when prompt allready exist in firebase redirect to the id recipe page and delete the new one
     if (recipes?.docs.find((recipe) => recipe.data().prompt === prompt)) {
       const recipeId = recipes.docs.find(
         (recipe) => recipe.data().prompt === prompt
       )?.id;
 
       console.log("redirect to recipe page", recipeId);
-      router.push(`/recipes/${recipeId}`);
+      router.replace(`/recipes/${recipeId}`);
       await deleteDoc(doc(db, "users", session?.user?.email!, "recipes", id));
       return;
     }
-    if (!prompt) return;
 
     // if prompt is a url
     if (prompt.includes("https://")) {
     } else {
-      const recipe: Recipe = {
-        id: id,
-        title: "test",
-        prompt: prompt,
-        ingredients: ["test"],
-        instructions: ["test"]
-        // updatedAt: serverTimestamp()
-      };
+      const configuration = new Configuration({
+        apiKey: process.env.CHATGPT_API_KEY
+      });
+      const openai = new OpenAIApi(configuration);
+      const recipePrompt = `${process.env.MESSAGE_PROMT} ${prompt} `;
 
-      const recipeRef = doc(db, "users", session?.user?.email!, "recipes", id);
-      updateDoc(recipeRef, recipe)
-        .then(() => {
-          console.log("Document written with ID: ");
-        })
-        .catch((error) => {
-          console.error("Error adding document: ", error);
-        });
+      const response = await openai.createCompletion({
+        model: "text-davinci-003",
+        prompt: recipePrompt,
+        max_tokens: 4000,
+        temperature: 0.9,
+        top_p: 1.0,
+        frequency_penalty: 0.5,
+        presence_penalty: 0.0,
+        stop: ["You:"]
+      });
+      console.log(response.data.choices[0].text);
+      setReplyFromGpt(response.data.choices[0].text);
     }
   };
 
