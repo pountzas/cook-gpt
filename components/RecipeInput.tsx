@@ -29,6 +29,7 @@ function RecipeInput({ id }: Props) {
   const [hidden, setHidden] = useState<boolean>(true);
   const [gptError, setGptError] = useState<boolean>(false);
   const [gptTitle, setGptTitle] = useState<string>("");
+  const [loadingPrompt, setLoadingPrompt] = useState<boolean>(false);
   const [gptIngredientsArray, setGptIngredientsArray] = useState<string[]>([]);
   const [gptInstructionsArray, setGptInstructionsArray] = useState<string[]>(
     []
@@ -105,12 +106,14 @@ function RecipeInput({ id }: Props) {
 
       setTimeout(() => {
         setMainTitle(gptTitle);
+        setLoadingPrompt(false);
       }, 800);
     }
   }, [gptTitle, gptIngredientsArray, gptInstructionsArray]);
 
   const handlePromtType = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setLoadingPrompt(true);
     if (!prompt) return;
     // when prompt allready exist in firebase redirect to the id recipe page and delete the new one
     if (recipes?.docs.find((recipe) => recipe.data().prompt === prompt)) {
@@ -121,6 +124,7 @@ function RecipeInput({ id }: Props) {
       console.log("redirect to recipe page", recipeId);
       router.replace(`/recipes/${recipeId}`);
       await deleteDoc(doc(db, "users", session?.user?.email!, "recipes", id));
+      setLoadingPrompt(false);
       return;
     }
 
@@ -144,6 +148,12 @@ function RecipeInput({ id }: Props) {
         stop: ["You:"]
       });
       console.log(response.data.choices[0].text);
+      const error = response?.data.choices[0].text.includes("Error");
+      if (error) {
+        console.log(error);
+        setLoadingPrompt(false);
+        return;
+      }
       setReplyFromGpt(response.data.choices[0].text);
     }
   };
@@ -163,14 +173,17 @@ function RecipeInput({ id }: Props) {
             type="text"
             placeholder="Enter a food # or a URL of a post with a food name."
           />
-
-          <button
-            disabled={!prompt || !session}
-            type="submit"
-            className="bg-[#11A37F] hover:opacity-50 text-white font-bold px-4 py-2 rounded disabled:bg-gray-300 disabled:cursor-not-allowed"
-          >
-            <PaperAirplaneIcon className="w-4 h-4 -rotate-45" />
-          </button>
+          {loadingPrompt ? (
+            <p>loading...</p>
+          ) : (
+            <button
+              disabled={!prompt || !session}
+              type="submit"
+              className="bg-[#11A37F] hover:opacity-50 text-white font-bold px-4 py-2 rounded disabled:bg-gray-300 disabled:cursor-not-allowed"
+            >
+              <PaperAirplaneIcon className="w-4 h-4 -rotate-45" />
+            </button>
+          )}
         </form>
       </div>
       <p className="pt-1 pl-2 text-[10px]">
