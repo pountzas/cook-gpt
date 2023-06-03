@@ -148,12 +148,6 @@ function RecipeInput({ id }: Props) {
         stop: ["You:"]
       });
       console.log(response.data.choices[0].text);
-      const error = response?.data.choices[0].text.includes("Error");
-      if (error) {
-        console.log(error);
-        setLoadingPrompt(false);
-        return;
-      }
       setReplyFromGpt(response.data.choices[0].text);
     }
   };
