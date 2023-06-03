@@ -11,7 +11,7 @@ import Login from "../components/Login";
 import SideBar from "../components/SideBar";
 
 export const metadata: Metadata = {
-  title: "cookGPT",
+  title: "cookGPTlimited",
   description:
     "Search for recipes using a hashtag or a post url from social media with the power of openAI",
   keywords: [

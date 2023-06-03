@@ -59,7 +59,7 @@ function RecipeBody({ id }: Props) {
                         transition={{ delay: index * 0.3 }}
                         key={index}
                       >
-                        {ingredient !== " " && <p>-</p>}
+                        {/* {ingredient !== " " && <p>-</p>} */}
                         <p>{ingredient}</p>
                       </motion.div>
                     ))
@@ -97,7 +97,7 @@ function RecipeBody({ id }: Props) {
                         transition={{ delay: index * 0.3 }}
                         key={index}
                       >
-                        {instruction !== " " && <p>-</p>}
+                        {/* {instruction !== " " && <p>-</p>} */}
                         <p>{instruction}</p>
                       </motion.div>
                     ))

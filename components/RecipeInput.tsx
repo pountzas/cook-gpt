@@ -58,6 +58,7 @@ function RecipeInput({ id }: Props) {
   }, [recipes]);
 
   useEffect(() => {
+    // scrape the recipe from the string prompt to get the title, ingredients, and instructions values
     const errorMatch = replyFromGpt?.includes("Error");
     setGptError(errorMatch ? true : false);
     console.log(gptError);
@@ -87,11 +88,12 @@ function RecipeInput({ id }: Props) {
   }, [replyFromGpt]);
 
   useEffect(() => {
+    // when the title, ingredients, and instructions are scraped from the string prompt update the new recipe in firebase
     if (gptTitle && gptIngredientsArray.length && gptInstructionsArray.length) {
       const recipe: Recipe = {
         id: id,
-        title: gptTitle,
-        prompt: prompt,
+        title: gptTitle.toString(),
+        prompt: prompt.toString(),
         ingredients: gptIngredientsArray,
         instructions: gptInstructionsArray
       };
@@ -103,7 +105,7 @@ function RecipeInput({ id }: Props) {
 
       setTimeout(() => {
         setMainTitle(gptTitle);
-      }, 1000);
+      }, 800);
     }
   }, [gptTitle, gptIngredientsArray, gptInstructionsArray]);
 
