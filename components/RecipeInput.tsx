@@ -90,7 +90,7 @@ function RecipeInput({ id }: Props) {
   useEffect(() => {
     // when the title, ingredients, and instructions are scraped from the string prompt update the new recipe in firebase
     if (gptTitle && gptIngredientsArray.length && gptInstructionsArray.length) {
-      const recipe: Recipe = {
+      const recipe = {
         id: id,
         title: gptTitle.toString(),
         prompt: prompt.toString(),
