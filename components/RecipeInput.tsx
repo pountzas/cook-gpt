@@ -148,7 +148,9 @@ function RecipeInput({ id }: Props) {
         stop: ["You:"]
       });
       console.log(response.data.choices[0].text);
-      setReplyFromGpt(response.data.choices[0].text);
+      setTimeout(() => {
+        setReplyFromGpt(response.data.choices[0].text);
+      }, 600);
     }
   };
 
