@@ -17,7 +17,6 @@ import { useCollection } from "react-firebase-hooks/firestore";
 import { useRecoilState } from "recoil";
 import { mainTitleAtom } from "../atoms/dataAtom";
 import { db } from "../firebase";
-// import getGptRecipeFromPromt from "../lib/getGptRecipeFromPromt";
 
 type Props = {
   id: string;
@@ -130,6 +129,7 @@ function RecipeInput({ id }: Props) {
 
     // if prompt is a url
     if (prompt.includes("https://")) {
+      console.log("url promt not available yet");
     } else {
       const configuration = new Configuration({
         apiKey: process.env.CHATGPT_API_KEY
@@ -140,7 +140,7 @@ function RecipeInput({ id }: Props) {
       const response = await openai.createCompletion({
         model: "text-davinci-003",
         prompt: recipePrompt,
-        max_tokens: 4000,
+        max_tokens: 2200,
         temperature: 0.9,
         top_p: 1.0,
         frequency_penalty: 0.5,
@@ -148,9 +148,7 @@ function RecipeInput({ id }: Props) {
         stop: ["You:"]
       });
       console.log(response.data.choices[0].text);
-      // setTimeout(() => {
       setReplyFromGpt(response.data.choices[0].text);
-      // }, 600);
     }
   };
 
