@@ -1,10 +1,6 @@
 /** @type {import('next').NextConfig} */
 module.exports = {
   reactStrictMode: true,
-  experimental: {
-    appDir: true,
-
-  },
   env: {
     SCRAPER_API: process.env.SCRAPER_API,
     CHATGPT_API_KEY: process.env.CHATGPT_API_KEY,
