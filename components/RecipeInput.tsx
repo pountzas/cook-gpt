@@ -11,7 +11,7 @@ import {
 } from "firebase/firestore";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import { Configuration, OpenAIApi } from "openai";
+import OpenAI from "openai";
 import { FormEvent, useEffect, useState } from "react";
 import { useCollection } from "react-firebase-hooks/firestore";
 import { useRecoilState } from "recoil";
@@ -131,24 +131,28 @@ function RecipeInput({ id }: Props) {
     if (prompt.includes("https://")) {
       console.log("url promt not available yet");
     } else {
-      const configuration = new Configuration({
-        apiKey: process.env.CHATGPT_API_KEY
+      const openai = new OpenAI({
+        apiKey: process.env.CHATGPT_API_KEY, dangerouslyAllowBrowser: true
       });
-      const openai = new OpenAIApi(configuration);
       const recipePrompt = `${process.env.MESSAGE_PROMT} ${prompt} `;
 
-      const response = await openai.createCompletion({
-        model: "text-davinci-003",
-        prompt: recipePrompt,
-        max_tokens: 2200,
+      const response = await openai.chat.completions.create({
+        model: "gpt-4o-mini",
+        messages: [
+          {
+            role: "user",
+            content: recipePrompt
+          }
+        ],
+        max_tokens: 2048,
         temperature: 0.9,
         top_p: 1.0,
         frequency_penalty: 0.5,
         presence_penalty: 0.0,
         stop: ["You:"]
       });
-      console.log(response.data.choices[0].text);
-      setReplyFromGpt(response.data.choices[0].text);
+      console.log(response.choices[0].message.content);
+      setReplyFromGpt(response.choices[0].message.content!);
     }
   };
 
