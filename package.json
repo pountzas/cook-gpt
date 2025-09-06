@@ -14,7 +14,7 @@
     "firebase": "^10.13.2",
     "follow-redirects": "^1.15.6",
     "framer-motion": "^10.2.3",
-    "next": "^14.2.22",
+    "next": "^14.2.32",
     "next-auth": "^4.24.11",
     "openai": "^4.58.1",
     "react": "^18.3.1",
