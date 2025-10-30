@@ -1,11 +1,11 @@
 import { create } from 'zustand';
 
 interface ChatGptStore {
-  chatGptQuestionPromt: string;
+  chatGptQuestionPrompt: string;
   chatGptAnswer: string;
   isLoadingData: boolean;
   chatGptError: string;
-  setChatGptQuestionPromt: (prompt: string) => void;
+  setChatGptQuestionPrompt: (prompt: string) => void;
   setChatGptAnswer: (answer: string) => void;
   setIsLoadingData: (loading: boolean) => void;
   setChatGptError: (error: string) => void;
@@ -13,16 +13,16 @@ interface ChatGptStore {
 }
 
 export const useChatGptStore = create<ChatGptStore>((set) => ({
-  chatGptQuestionPromt: '',
+  chatGptQuestionPrompt: '',
   chatGptAnswer: '',
   isLoadingData: false,
   chatGptError: '',
-  setChatGptQuestionPromt: (prompt: string) => set({ chatGptQuestionPromt: prompt }),
+  setChatGptQuestionPrompt: (prompt: string) => set({ chatGptQuestionPrompt: prompt }),
   setChatGptAnswer: (answer: string) => set({ chatGptAnswer: answer }),
   setIsLoadingData: (loading: boolean) => set({ isLoadingData: loading }),
   setChatGptError: (error: string) => set({ chatGptError: error }),
   resetChatGpt: () => set({
-    chatGptQuestionPromt: '',
+    chatGptQuestionPrompt: '',
     chatGptAnswer: '',
     isLoadingData: false,
     chatGptError: '',
