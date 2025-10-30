@@ -11,7 +11,16 @@ module.exports = {
     NEXTAUTH_SECRET: process.env.NEXTAUTH_SECRET,
   },
   images: {
-    domains: ['assets', 'localhost']
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'assets',
+      },
+      {
+        protocol: 'http',
+        hostname: 'localhost',
+      },
+    ],
   },
 
 }
