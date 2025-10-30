@@ -1,12 +1,11 @@
-"use client";
 
-import { useSession, signOut } from "next-auth/react";
-import { Activity } from "react";
+import { useSession } from "next-auth/react";
 import NewRecipe from "./NewRecipe";
 import RecipeItem from "./RecipeItem";
 import { useCollection } from "react-firebase-hooks/firestore";
 import { collection, orderBy, query } from "firebase/firestore";
 import { db } from "../firebase";
+import LogoutButton from "./LogoutButton";
 
 function SideBar() {
   const { data: session } = useSession();
@@ -35,14 +34,7 @@ function SideBar() {
         </div>
       </div>
 
-      <Activity mode={session ? 'visible' : 'hidden'}>
-        <img
-          onClick={() => signOut()}
-          src={session?.user?.image!}
-          alt="Profile pic"
-          className="w-10 h-10 mx-auto mb-2 rounded-full cursor-pointer"
-        />
-      </Activity>
+      <LogoutButton />
     </div>
   );
 }
