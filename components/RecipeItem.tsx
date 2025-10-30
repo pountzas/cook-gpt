@@ -1,3 +1,4 @@
+"use client";
 import {
   ChatBubbleLeftIcon,
   ListBulletIcon,
@@ -9,12 +10,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { db } from "../firebase";
-import { useRecoilState } from "recoil";
-import {
-  mainTitleAtom,
-  premadeIngredientsAtom,
-  premadeInstructionsAtom
-} from "../atoms/dataAtom";
+import { useRecipeStore } from "../stores/recipeStore";
 
 type RecipeItemProps = {
   id: string;
@@ -22,13 +18,7 @@ type RecipeItemProps = {
 };
 
 function RecipeItem({ id, title }: RecipeItemProps) {
-  const [mainTitle, setMainTitle] = useRecoilState(mainTitleAtom);
-  const [premadeIngredients, setPremadeIngredients] = useRecoilState(
-    premadeIngredientsAtom
-  );
-  const [premadeInstructions, setPremadeInstructions] = useRecoilState(
-    premadeInstructionsAtom
-  );
+  const { mainTitle, setMainTitle, setPremadeIngredients, setPremadeInstructions } = useRecipeStore();
 
   const pathname = usePathname();
   const router = useRouter();

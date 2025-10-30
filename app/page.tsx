@@ -17,6 +17,7 @@ function HomePage() {
             {premadeRecipes.map((recipe) => (
               <PremadeRecipeItem
                 key={recipe.id}
+                id={recipe.id}
                 name={recipe.name}
                 ingredients={recipe.ingredients}
                 instructions={recipe.instructions}

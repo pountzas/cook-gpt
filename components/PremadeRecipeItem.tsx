@@ -1,36 +1,25 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useRecoilState } from "recoil";
-import {
-  mainTitleAtom,
-  premadeIngredientsAtom,
-  premadeInstructionsAtom
-} from "../atoms/dataAtom";
+import { useRecipeStore } from "../stores/recipeStore";
 
 type Props = {
-  key: number;
+  id: number;
   name: string;
   instructions: string[] | void;
   ingredients: string[] | void;
 };
 
-function PremadeRecipeItem({ key, name, instructions, ingredients }: Props) {
-  const [mainTitle, setMainTitle] = useRecoilState(mainTitleAtom);
-  const [premadeIngredients, setPremadeIngredients]: any[] = useRecoilState(
-    premadeIngredientsAtom
-  );
-  const [premadeInstructions, setPremadeInstructions]: any[] = useRecoilState(
-    premadeInstructionsAtom
-  );
+function PremadeRecipeItem({ id, name, instructions, ingredients }: Props) {
+  const { setMainTitle, setPremadeIngredients, setPremadeInstructions } = useRecipeStore();
 
   const router = useRouter();
 
   const handlePremadePage = () => {
     setMainTitle(name);
-    setPremadeIngredients(ingredients);
-    setPremadeInstructions(instructions);
-    router.push(`/recipes/${key}`);
+    setPremadeIngredients(ingredients || []);
+    setPremadeInstructions(instructions || []);
+    router.push(`/recipes/${id}`);
   };
 
   return (
