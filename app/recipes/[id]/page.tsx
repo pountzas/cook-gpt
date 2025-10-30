@@ -4,12 +4,14 @@ import RecipeInput from "../../../components/RecipeInput";
 import RecipeTitle from "../../../components/RecipeTitle";
 
 type RecipePageProps = {
-  params: {
+  params: Promise<{
     id: string;
-  };
+  }>;
 };
 
-function RecipePage({ params: { id } }: RecipePageProps) {
+async function RecipePage({ params }: RecipePageProps) {
+  const { id } = await params;
+  
   return (
     <div className="flex flex-col items-center justify-between h-screen py-8 overflow-hidden relative">
       <HomeButton />

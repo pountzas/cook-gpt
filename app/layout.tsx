@@ -5,7 +5,6 @@ import type { Metadata } from "next";
 import { authOptions } from "../pages/api/auth/[...nextauth]";
 import { ReactNode } from "react";
 
-import RecoilRoot from "../components/RecoilRoot";
 import SessionProvider from "../components/SessionProvider";
 import Login from "../components/Login";
 import SideBar from "../components/SideBar";
@@ -36,18 +35,16 @@ export default async function RootLayout({
     <html lang="en">
       <body>
         <SessionProvider session={session}>
-          <RecoilRoot>
-            {!session ? (
-              <Login />
-            ) : (
-              <div className="flex">
-                <div className="bg-[#202123] max-w-xs h-screen overflow-y-auto md:min-w-[20rem]">
-                  <SideBar />
-                </div>
-                <div className="bg-[#343541] flex-1">{children}</div>
+          {!session ? (
+            <Login />
+          ) : (
+            <div className="flex">
+              <div className="bg-[#202123] max-w-xs h-screen overflow-y-auto md:min-w-[20rem]">
+                <SideBar />
               </div>
-            )}
-          </RecoilRoot>
+              <div className="bg-[#343541] flex-1">{children}</div>
+            </div>
+          )}
         </SessionProvider>
       </body>
     </html>

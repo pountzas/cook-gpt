@@ -13,8 +13,7 @@ import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { FormEvent, useEffect, useState } from "react";
 import { useCollection } from "react-firebase-hooks/firestore";
-import { useRecoilState } from "recoil";
-import { mainTitleAtom } from "../atoms/dataAtom";
+import { useRecipeStore } from "../stores/recipeStore";
 import { db } from "../firebase";
 
 type Props = {
@@ -32,7 +31,7 @@ function RecipeInput({ id }: Props) {
   const [gptInstructionsArray, setGptInstructionsArray] = useState<string[]>(
     []
   );
-  const [mainTitle, setMainTitle] = useRecoilState(mainTitleAtom);
+  const { mainTitle, setMainTitle } = useRecipeStore();
 
   const router = useRouter();
   const { data: session } = useSession();

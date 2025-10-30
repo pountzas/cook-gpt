@@ -5,21 +5,10 @@ import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { addDoc, collection, serverTimestamp } from "firebase/firestore";
 import { db } from "../firebase";
-import { useRecoilState } from "recoil";
-import {
-  mainTitleAtom,
-  premadeIngredientsAtom,
-  premadeInstructionsAtom
-} from "../atoms/dataAtom";
+import { useRecipeStore } from "../stores/recipeStore";
 
 function NewRecipe() {
-  const [mainTitle, setMainTitle] = useRecoilState(mainTitleAtom);
-  const [premadeIngredients, setPremadeIngredients] = useRecoilState(
-    premadeIngredientsAtom
-  );
-  const [premadeInstructions, setPremadeInstructions] = useRecoilState(
-    premadeInstructionsAtom
-  );
+  const { setMainTitle, setPremadeIngredients, setPremadeInstructions } = useRecipeStore();
 
   const router = useRouter();
   const { data: session } = useSession();
