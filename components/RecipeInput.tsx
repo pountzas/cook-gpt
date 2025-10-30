@@ -169,7 +169,7 @@ function RecipeInput({ id }: Props) {
             value={prompt}
             onChange={(e) => setPrompt(e.target.value)}
             type="text"
-            placeholder="Enter a food # or a URL of a post with a food name."
+            placeholder="Enter a food name."
           />
           {loadingPrompt ? (
             <p>loading...</p>
