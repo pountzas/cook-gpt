@@ -1,3 +1,4 @@
+"use client";
 import { Activity } from "react";
 import { useSession, signOut } from "next-auth/react";
 
