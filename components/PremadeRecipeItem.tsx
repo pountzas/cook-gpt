@@ -4,13 +4,13 @@ import { useRouter } from "next/navigation";
 import { useRecipeStore } from "../stores/recipeStore";
 
 type Props = {
-  key: number;
+  id: number;
   name: string;
   instructions: string[] | void;
   ingredients: string[] | void;
 };
 
-function PremadeRecipeItem({ key, name, instructions, ingredients }: Props) {
+function PremadeRecipeItem({ id, name, instructions, ingredients }: Props) {
   const { setMainTitle, setPremadeIngredients, setPremadeInstructions } = useRecipeStore();
 
   const router = useRouter();
@@ -19,7 +19,7 @@ function PremadeRecipeItem({ key, name, instructions, ingredients }: Props) {
     setMainTitle(name);
     setPremadeIngredients(ingredients || []);
     setPremadeInstructions(instructions || []);
-    router.push(`/recipes/${key}`);
+    router.push(`/recipes/${id}`);
   };
 
   return (

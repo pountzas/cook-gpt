@@ -2,7 +2,6 @@
 
 import { collection, query } from "firebase/firestore";
 import { useSession } from "next-auth/react";
-import { useEffect, useState } from "react";
 import { useCollection } from "react-firebase-hooks/firestore";
 import { useRecipeStore } from "../stores/recipeStore";
 import { db } from "../firebase";
@@ -15,15 +14,7 @@ type Props = {
 
 function RecipeBody({ id }: Props) {
   const { data: session } = useSession();
-  const [isMounted, setIsMounted] = useState<boolean>(false);
   const { premadeIngredients, premadeInstructions } = useRecipeStore();
-
-  useEffect(() => {
-    setIsMounted(true);
-    return () => {
-      setIsMounted(false);
-    };
-  }, []);
 
   const [recipes] = useCollection(
     session && query(collection(db, "users", session?.user?.email!, "recipes"))
