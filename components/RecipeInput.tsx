@@ -12,6 +12,7 @@ import {
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { FormEvent, useEffect, useState } from "react";
+import { Activity } from "react";
 import { useCollection } from "react-firebase-hooks/firestore";
 import { useRecipeStore } from "../stores/recipeStore";
 import { db } from "../firebase";
@@ -169,42 +170,44 @@ function RecipeInput({ id }: Props) {
   };
 
   return (
-    <div hidden={hidden} className="text-sm w-[50%] text-gray-400 ">
-      <div className="rounded-lg shadow-lg bg-gray-700/50">
-        <form
-          onSubmit={(e) => handlePromtType(e)}
-          className="flex p-5 space-x-5"
-        >
-          <input
-            className="flex-1 bg-transparent focus:outline-none disabled:cursor-not-allowed disabled:text-gray-300"
-            disabled={!session}
-            value={prompt}
-            onChange={(e) => setPrompt(e.target.value)}
-            type="text"
-            placeholder="Enter a food name."
-          />
-          {loadingPrompt ? (
-            <p>loading...</p>
-          ) : (
-            <button
-              disabled={!prompt || !session}
-              type="submit"
-              className="bg-[#11A37F] hover:opacity-50 text-white font-bold px-4 py-2 rounded disabled:bg-gray-300 disabled:cursor-not-allowed"
-            >
-              <PaperAirplaneIcon className="w-4 h-4 -rotate-45" />
-            </button>
-          )}
-        </form>
-        {gptError && (
+    <Activity mode={hidden ? 'hidden' : 'visible'}>
+      <div className="text-sm w-[50%] text-gray-400 ">
+        <div className="rounded-lg shadow-lg bg-gray-700/50">
+          <form
+            onSubmit={(e) => handlePromtType(e)}
+            className="flex p-5 space-x-5"
+          >
+            <input
+              className="flex-1 bg-transparent focus:outline-none disabled:cursor-not-allowed disabled:text-gray-300"
+              disabled={!session}
+              value={prompt}
+              onChange={(e) => setPrompt(e.target.value)}
+              type="text"
+              placeholder="Enter a food name."
+            />
+            {loadingPrompt ? (
+              <p>loading...</p>
+            ) : (
+              <button
+                disabled={!prompt || !session}
+                type="submit"
+                className="bg-[#11A37F] hover:opacity-50 text-white font-bold px-4 py-2 rounded disabled:bg-gray-300 disabled:cursor-not-allowed"
+              >
+                <PaperAirplaneIcon className="w-4 h-4 -rotate-45" />
+              </button>
+            )}
+          </form>
+        <Activity mode={gptError ? 'visible' : 'hidden'}>
           <div className="px-5 pb-3">
             <p className="text-red-400 text-xs">{gptError}</p>
           </div>
-        )}
+        </Activity>
+        </div>
+        <p className="pt-1 pl-2 text-[10px]">
+          <b>CookGPT 2023</b> is an openAI powered recipe generator.
+        </p>
       </div>
-      <p className="pt-1 pl-2 text-[10px]">
-        <b>CookGPT 2023</b> is an openAI powered recipe generator.
-      </p>
-    </div>
+    </Activity>
   );
 }
 
