@@ -150,7 +150,7 @@ function RecipeInput({ id }: Props) {
 
         if (!response.ok) {
           if (response.status === 429) {
-            setGptError(`Rate limit exceeded. Please wait ${data.retryAfter || 60} seconds and try again.`);
+            setGptError(`Rate limit exceeded. Contact the administrator at nikos@pountzas.gr`);
           } else {
             setGptError(data.error || 'An error occurred while generating the recipe');
           }

@@ -50,7 +50,7 @@ export default async function handler(
 
     if (error.status === 429) {
       return res.status(429).json({
-        error: 'Rate limit exceeded. Contact the administrator at nikospountzas@gmail.com',
+        error: 'Rate limit exceeded. Contact the administrator at nikos@pountzas.gr',
       });
     }
 
