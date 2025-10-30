@@ -39,7 +39,7 @@ function SideBar() {
           onClick={() => signOut()}
           src={session.user?.image!}
           alt="Profile pic"
-          className="w-12 h-12 mx-auto mb-2 rounded-full cursor-pointer"
+          className="w-10 h-10 mx-auto mb-2 rounded-full cursor-pointer"
         />
       )}
     </div>

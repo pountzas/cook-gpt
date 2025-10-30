@@ -11,7 +11,6 @@ import {
 } from "firebase/firestore";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import OpenAI from "openai";
 import { FormEvent, useEffect, useState } from "react";
 import { useCollection } from "react-firebase-hooks/firestore";
 import { useRecoilState } from "recoil";
@@ -26,7 +25,7 @@ function RecipeInput({ id }: Props) {
   const [prompt, setPrompt] = useState<string>("");
   const [replyFromGpt, setReplyFromGpt] = useState<string | undefined>("");
   const [hidden, setHidden] = useState<boolean>(true);
-  const [gptError, setGptError] = useState<boolean>(false);
+  const [gptError, setGptError] = useState<string>("");
   const [gptTitle, setGptTitle] = useState<string>("");
   const [loadingPrompt, setLoadingPrompt] = useState<boolean>(false);
   const [gptIngredientsArray, setGptIngredientsArray] = useState<string[]>([]);
@@ -60,7 +59,7 @@ function RecipeInput({ id }: Props) {
   useEffect(() => {
     // scrape the recipe from the string prompt to get the title, ingredients, and instructions values
     const errorMatch = replyFromGpt?.includes("Error");
-    setGptError(errorMatch ? true : false);
+    setGptError(errorMatch ? "Error in response" : "");
     console.log(gptError);
     if (!gptError) {
       const titleMatch = replyFromGpt?.match(/Title: (.*)\n/);
@@ -84,7 +83,7 @@ function RecipeInput({ id }: Props) {
         setGptInstructionsArray(instructions.split("\n"));
       }
     }
-    setGptError(false);
+    setGptError("");
   }, [replyFromGpt]);
 
   useEffect(() => {
@@ -113,8 +112,14 @@ function RecipeInput({ id }: Props) {
   const handlePromtType = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoadingPrompt(true);
-    if (!prompt) return;
-    // when prompt allready exist in firebase redirect to the id recipe page and delete the new one
+    setGptError("");
+
+    if (!prompt) {
+      setLoadingPrompt(false);
+      return;
+    }
+
+    // when prompt already exist in firebase redirect to the id recipe page and delete the new one
     if (recipes?.docs.find((recipe) => recipe.data().prompt === prompt)) {
       const recipeId = recipes.docs.find(
         (recipe) => recipe.data().prompt === prompt
@@ -129,30 +134,38 @@ function RecipeInput({ id }: Props) {
 
     // if prompt is a url
     if (prompt.includes("https://")) {
-      console.log("url promt not available yet");
+      console.log("url prompt not available yet");
+      setGptError("URL prompts are not available yet");
+      setLoadingPrompt(false);
     } else {
-      const openai = new OpenAI({
-        apiKey: process.env.CHATGPT_API_KEY, dangerouslyAllowBrowser: true
-      });
-      const recipePrompt = `${process.env.MESSAGE_PROMT} ${prompt} `;
+      try {
+        const response = await fetch('/api/generate-recipe', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ prompt }),
+        });
 
-      const response = await openai.chat.completions.create({
-        model: "gpt-4o-mini",
-        messages: [
-          {
-            role: "user",
-            content: recipePrompt
+        const data = await response.json();
+
+        if (!response.ok) {
+          if (response.status === 429) {
+            setGptError(`Rate limit exceeded. Please wait ${data.retryAfter || 60} seconds and try again.`);
+          } else {
+            setGptError(data.error || 'An error occurred while generating the recipe');
           }
-        ],
-        max_tokens: 2048,
-        temperature: 0.9,
-        top_p: 1.0,
-        frequency_penalty: 0.5,
-        presence_penalty: 0.0,
-        stop: ["You:"]
-      });
-      console.log(response.choices[0].message.content);
-      setReplyFromGpt(response.choices[0].message.content!);
+          setLoadingPrompt(false);
+          return;
+        }
+
+        console.log(data.content);
+        setReplyFromGpt(data.content);
+      } catch (error) {
+        console.error('Error calling API:', error);
+        setGptError('Failed to connect to the recipe generation service. Please try again.');
+        setLoadingPrompt(false);
+      }
     }
   };
 
@@ -183,6 +196,11 @@ function RecipeInput({ id }: Props) {
             </button>
           )}
         </form>
+        {gptError && (
+          <div className="px-5 pb-3">
+            <p className="text-red-400 text-xs">{gptError}</p>
+          </div>
+        )}
       </div>
       <p className="pt-1 pl-2 text-[10px]">
         <b>CookGPT 2023</b> is an openAI powered recipe generator.
