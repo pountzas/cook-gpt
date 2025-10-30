@@ -4,7 +4,12 @@
   "memory_bank": {
     "path": "./memory-bank/",
     "config_file": "./memory-bank/config.json",
-    "enabled": true
+    "enabled": true,
+    "core_files": {
+      "active_context": "./memory-bank/activeContext.md",
+      "progress_log": "./memory-bank/progress.md",
+      "metrics": "./memory-bank/metrics.md"
+    }
   },
   "legacy_patterns": [
     {
