@@ -13,13 +13,13 @@ CookGPT is a modern web application that generates custom recipes using OpenAI's
 
 ## Tech Stack
 
-- **Frontend**: Next.js 14, React 18, TypeScript
+- **Frontend**: Next.js 16, React 19, TypeScript
 - **Styling**: Tailwind CSS, Framer Motion
 - **Backend**: Next.js API Routes, Firebase
 - **AI**: OpenAI GPT-4o-mini
 - **Authentication**: NextAuth.js
 - **Database**: Firebase Firestore
-- **State Management**: Recoil
+- **State Management**: Zustand
 
 ## Getting Started
 
@@ -97,7 +97,7 @@ cook-gpt/
 ├── pages/api/             # API routes
 │   ├── auth/             # NextAuth configuration
 │   └── generate-recipe.ts # OpenAI integration
-├── atoms/                 # Recoil state management
+├── stores/                # Zustand state management
 ├── firebase.ts            # Firebase configuration
 ├── memory-bank/           # Development memory system
 └── styles/                # Global styles
