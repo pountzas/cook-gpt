@@ -96,8 +96,6 @@ function RecipeInput({ id }: Props) {
         instructions: gptInstructionsArray,
       };
 
-      console.log(recipe);
-
       const recipeRef = doc(db, "users", session?.user?.email!, "recipes", id);
       updateDoc(recipeRef, recipe);
 
