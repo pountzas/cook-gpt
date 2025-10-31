@@ -12,7 +12,7 @@
     "debug": "^4.3.4",
     "encoding": "^0.1.13",
     "eslint-config-next": "^16.0.0",
-    "firebase": "^12.4.0",
+    "firebase": "^12.5.0",
     "follow-redirects": "^1.15.6",
     "framer-motion": "^12.23.24",
     "next": "^16.0.1",
