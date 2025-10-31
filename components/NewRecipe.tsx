@@ -8,7 +8,8 @@ import { db } from "../firebase";
 import { useRecipeStore } from "../stores/recipeStore";
 
 function NewRecipe() {
-  const { setMainTitle, setPremadeIngredients, setPremadeInstructions } = useRecipeStore();
+  const { setMainTitle, setPremadeIngredients, setPremadeInstructions } =
+    useRecipeStore();
 
   const router = useRouter();
   const { data: session } = useSession();
@@ -25,7 +26,7 @@ function NewRecipe() {
         title: "",
         ingredients: [],
         instructions: [],
-        createdAt: serverTimestamp()
+        createdAt: serverTimestamp(),
       }
     );
 
@@ -35,7 +36,7 @@ function NewRecipe() {
   return (
     <div
       onClick={createNewRecipe}
-      className="border border-gray-700 rounded-lg cookRow fcc"
+      className="sticky top-0 border border-gray-700 rounded-lg cookRow fcc bg-gray-700"
     >
       <PlusIcon className="w-4 h-4" />
       <p>New Recipe</p>

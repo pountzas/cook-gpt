@@ -51,7 +51,7 @@ pnpm install
 Create a `.env.local` file with:
 ```env
 CHATGPT_API_KEY=your_openai_api_key
-MESSAGE_PROMT=your_custom_prompt_prefix
+MESSAGE_PROMPT=your_custom_prompt_prefix
 # Firebase configuration variables
 NEXTAUTH_SECRET=your_nextauth_secret
 NEXTAUTH_URL=http://localhost:3000

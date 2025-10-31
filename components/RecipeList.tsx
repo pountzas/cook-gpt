@@ -7,18 +7,25 @@ import { db } from "../firebase";
 import RecipeItem from "./RecipeItem";
 
 function RecipeList() {
-    const { data: session } = useSession();
-    const [recipes, loading, error] = useCollection(
-        session &&
-            query(collection(db, "users", session.user?.email!, "recipes"), orderBy("createdAt", "desc"))
-    );
-    return (
-        <>
-            {recipes?.docs.map((recipe) => (
-                <RecipeItem key={recipe.id} id={recipe.id} title={recipe.data().title} />
-            ))}
-        </>
-    );
+  const { data: session } = useSession();
+  const [recipes, loading, error] = useCollection(
+    session &&
+      query(
+        collection(db, "users", session.user?.email!, "recipes"),
+        orderBy("createdAt", "desc")
+      )
+  );
+  return (
+    <>
+      {recipes?.docs.map((recipe) => (
+        <RecipeItem
+          key={recipe.id}
+          id={recipe.id}
+          title={recipe.data().title}
+        />
+      ))}
+    </>
+  );
 }
 
 export default RecipeList;
