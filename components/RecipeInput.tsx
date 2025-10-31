@@ -7,7 +7,7 @@ import {
   query,
   doc,
   updateDoc,
-  deleteDoc
+  deleteDoc,
 } from "firebase/firestore";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
@@ -60,7 +60,6 @@ function RecipeInput({ id }: Props) {
     // scrape the recipe from the string prompt to get the title, ingredients, and instructions values
     const errorMatch = replyFromGpt?.includes("Error");
     setGptError(errorMatch ? "Error in response" : "");
-    console.log(gptError);
     if (!gptError) {
       const titleMatch = replyFromGpt?.match(/Title: (.*)\n/);
       setGptTitle(titleMatch ? titleMatch[1] : "");
@@ -94,7 +93,7 @@ function RecipeInput({ id }: Props) {
         title: gptTitle.toString(),
         prompt: prompt.toString(),
         ingredients: gptIngredientsArray,
-        instructions: gptInstructionsArray
+        instructions: gptInstructionsArray,
       };
 
       console.log(recipe);
@@ -125,7 +124,6 @@ function RecipeInput({ id }: Props) {
         (recipe) => recipe.data().prompt === prompt
       )?.id;
 
-      console.log("redirect to recipe page", recipeId);
       router.replace(`/recipes/${recipeId}`);
       await deleteDoc(doc(db, "users", session?.user?.email!, "recipes", id));
       setLoadingPrompt(false);
@@ -134,15 +132,14 @@ function RecipeInput({ id }: Props) {
 
     // if prompt is a url
     if (prompt.includes("https://")) {
-      console.log("url prompt not available yet");
       setGptError("URL prompts are not available yet");
       setLoadingPrompt(false);
     } else {
       try {
-        const response = await fetch('/api/generate-recipe', {
-          method: 'POST',
+        const response = await fetch("/api/generate-recipe", {
+          method: "POST",
           headers: {
-            'Content-Type': 'application/json',
+            "Content-Type": "application/json",
           },
           body: JSON.stringify({ prompt }),
         });
@@ -151,26 +148,32 @@ function RecipeInput({ id }: Props) {
 
         if (!response.ok) {
           if (response.status === 429) {
-            setGptError(`Rate limit exceeded. Contact the administrator at nikos@pountzas.gr`);
+            setGptError(
+              `Rate limit exceeded. Contact the administrator at nikos@pountzas.gr`
+            );
           } else {
-            setGptError(data.error || 'An error occurred while generating the recipe');
+            setGptError(
+              data.error || "An error occurred while generating the recipe"
+            );
           }
           setLoadingPrompt(false);
           return;
         }
 
-        console.log(data.content);
         setReplyFromGpt(data.content);
       } catch (error) {
-        console.error('Error calling API:', error);
-        setGptError('Failed to connect to the recipe generation service. Please try again.');
+        console.error("Error calling API:", error);
+        setGptError(
+          "Failed to connect to the recipe generation service. Please try again." +
+            error
+        );
         setLoadingPrompt(false);
       }
     }
   };
 
   return (
-    <Activity mode={hidden ? 'hidden' : 'visible'}>
+    <Activity mode={hidden ? "hidden" : "visible"}>
       <div className="text-sm w-[50%] text-gray-400 ">
         <div className="rounded-lg shadow-lg bg-gray-700/50">
           <form
@@ -197,11 +200,11 @@ function RecipeInput({ id }: Props) {
               </button>
             )}
           </form>
-        <Activity mode={gptError ? 'visible' : 'hidden'}>
-          <div className="px-5 pb-3">
-            <p className="text-red-400 text-xs">{gptError}</p>
-          </div>
-        </Activity>
+          <Activity mode={gptError ? "visible" : "hidden"}>
+            <div className="px-5 pb-3">
+              <p className="text-red-400 text-xs">{gptError}</p>
+            </div>
+          </Activity>
         </div>
         <p className="pt-1 pl-2 text-[10px]">
           <b>CookGPT 2023</b> is an openAI powered recipe generator.
