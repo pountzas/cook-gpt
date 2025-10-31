@@ -2,14 +2,22 @@ import { cache, cacheSignal } from 'react';
 import { NextRequest, NextResponse } from 'next/server';
 import OpenAI from 'openai';
 
-const openai = new OpenAI({
-  apiKey: process.env.CHATGPT_API_KEY,
-});
+// Validate OpenAI API key exists before proceeding
+function validateOpenAIKey(): NextResponse | null {
+  const apiKey = process.env.CHATGPT_API_KEY;
+  if (!apiKey || typeof apiKey !== 'string' || apiKey.trim() === '') {
+    return NextResponse.json(
+      { error: 'OpenAI API key is not configured. Please set CHATGPT_API_KEY environment variable.' },
+      { status: 500 }
+    );
+  }
+  return null;
+}
 
 // Cache the OpenAI API calls for automatic deduplication
 // React's cache() automatically deduplicates identical requests
-const generateRecipeCached = cache(async (prompt: string) => {
-  const recipePrompt = `${process.env.MESSAGE_PROMT} ${prompt}`;
+const generateRecipeCached = cache(async (prompt: string, openai: OpenAI) => {
+  const recipePrompt = `${process.env.MESSAGE_PROMPT} ${prompt}`;
 
   const response = await openai.chat.completions.create({
     model: "gpt-4o-mini",
@@ -46,6 +54,17 @@ const fetchWithCacheSignal = cache(async (url: string, options: RequestInit = {}
 });
 
 export async function POST(request: NextRequest) {
+  // Validate OpenAI API key before proceeding
+  const keyValidationError = validateOpenAIKey();
+  if (keyValidationError) {
+    return keyValidationError;
+  }
+
+  // Create OpenAI client after validation
+  const openai = new OpenAI({
+    apiKey: process.env.CHATGPT_API_KEY,
+  });
+
   try {
     const { prompt } = await request.json();
 
@@ -54,7 +73,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Use the cached function - identical prompts will be automatically deduplicated
-    const content = await generateRecipeCached(prompt);
+    const content = await generateRecipeCached(prompt, openai);
 
     if (!content) {
       return NextResponse.json({ error: 'No response from OpenAI', retryAfter: 60 }, { status: 500 });
