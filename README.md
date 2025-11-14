@@ -124,14 +124,10 @@ Generate a new recipe using AI.
 }
 ```
 
-## Contributing
-
-This project uses a Memory Bank system for structured development. See `memory-bank/` for guidelines and task management.
-
 ## License
 
 This project is private and proprietary.
 
 ## Contact
 
-For API rate limit issues or support: nikospountzas@gmail.com
+For API rate limit issues or support: nikos@pountzas.gr
