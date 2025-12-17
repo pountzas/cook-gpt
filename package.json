@@ -18,8 +18,8 @@
     "next": "^16.0.10",
     "next-auth": "^4.24.11",
     "openai": "^4.58.1",
-    "react": "^19.2.0",
-    "react-dom": "^19.2.0",
+    "react": "^19.2.3",
+    "react-dom": "^19.2.3",
     "react-firebase-hooks": "^5.1.1",
     "supports-color": "^9.4.0",
     "zustand": "^5.0.8"
