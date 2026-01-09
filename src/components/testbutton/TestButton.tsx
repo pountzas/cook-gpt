@@ -41,9 +41,10 @@ export const TestButton = React.forwardRef<HTMLButtonElement, TestButtonProps>(
           loading && 'cursor-wait',
           className
         )}
+        {...props}
         disabled={disabled || loading}
         aria-disabled={disabled || loading}
-        {...props}
+        type={props.type ?? 'button'}
       >
         {loading && (
           <svg
