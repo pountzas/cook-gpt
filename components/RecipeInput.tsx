@@ -16,6 +16,7 @@ import { Activity } from "react";
 import { useCollection } from "react-firebase-hooks/firestore";
 import { useRecipeStore } from "../stores/recipeStore";
 import { db } from "../firebase";
+import { parseRecipeResponse } from "../lib/parseRecipeResponse";
 
 type Props = {
   id: string;
@@ -23,21 +24,15 @@ type Props = {
 
 function RecipeInput({ id }: Props) {
   const [prompt, setPrompt] = useState<string>("");
-  const [replyFromGpt, setReplyFromGpt] = useState<string | undefined>("");
   const [hidden, setHidden] = useState<boolean>(true);
   const [gptError, setGptError] = useState<string>("");
-  const [gptTitle, setGptTitle] = useState<string>("");
   const [loadingPrompt, setLoadingPrompt] = useState<boolean>(false);
-  const [gptIngredientsArray, setGptIngredientsArray] = useState<string[]>([]);
-  const [gptInstructionsArray, setGptInstructionsArray] = useState<string[]>(
-    []
-  );
-  const { mainTitle, setMainTitle } = useRecipeStore();
+  const { setMainTitle } = useRecipeStore();
 
   const router = useRouter();
   const { data: session } = useSession();
 
-  const [recipes, loading, error] = useCollection(
+  const [recipes] = useCollection(
     session &&
       query(
         collection(db, "users", session.user?.email!, "recipes"),
@@ -54,57 +49,7 @@ function RecipeInput({ id }: Props) {
     } else {
       setHidden(true);
     }
-  }, [recipes]);
-
-  useEffect(() => {
-    // scrape the recipe from the string prompt to get the title, ingredients, and instructions values
-    const errorMatch = replyFromGpt?.includes("Error");
-    setGptError(errorMatch ? "Error in response" : "");
-    if (!gptError) {
-      const titleMatch = replyFromGpt?.match(/Title: (.*)\n/);
-      setGptTitle(titleMatch ? titleMatch[1] : "");
-
-      const ingredientsMatch = replyFromGpt?.match(
-        /Ingredients:([\s\S]*?)Instructions/
-      );
-      let ingredients = ingredientsMatch ? ingredientsMatch[1].trim() : "";
-
-      const instructionsMatch = replyFromGpt?.match(/Instructions:[\s\S]*/);
-      let instructions = instructionsMatch
-        ? instructionsMatch[0].replace("Instructions:", "").trim()
-        : "";
-
-      if (ingredients) {
-        setGptIngredientsArray(ingredients.split("\n"));
-      }
-
-      if (instructions) {
-        setGptInstructionsArray(instructions.split("\n"));
-      }
-    }
-    setGptError("");
-  }, [replyFromGpt]);
-
-  useEffect(() => {
-    // when the title, ingredients, and instructions are scraped from the string prompt update the new recipe in firebase
-    if (gptTitle && gptIngredientsArray.length && gptInstructionsArray.length) {
-      const recipe = {
-        id: id,
-        title: gptTitle.toString(),
-        prompt: prompt.toString(),
-        ingredients: gptIngredientsArray,
-        instructions: gptInstructionsArray,
-      };
-
-      const recipeRef = doc(db, "users", session?.user?.email!, "recipes", id);
-      updateDoc(recipeRef, recipe);
-
-      setTimeout(() => {
-        setMainTitle(gptTitle);
-        setLoadingPrompt(false);
-      }, 800);
-    }
-  }, [gptTitle, gptIngredientsArray, gptInstructionsArray]);
+  }, [recipes, id]);
 
   const handlePromtType = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -132,41 +77,59 @@ function RecipeInput({ id }: Props) {
     if (prompt.includes("https://")) {
       setGptError("URL prompts are not available yet");
       setLoadingPrompt(false);
-    } else {
-      try {
-        const response = await fetch("/api/generate-recipe", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ prompt }),
-        });
+      return;
+    }
 
-        const data = await response.json();
+    try {
+      const response = await fetch("/api/generate-recipe", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ prompt }),
+      });
 
-        if (!response.ok) {
-          if (response.status === 429) {
-            setGptError(
-              `Rate limit exceeded. Contact the administrator at nikos@pountzas.gr`
-            );
-          } else {
-            setGptError(
-              data.error || "An error occurred while generating the recipe"
-            );
-          }
-          setLoadingPrompt(false);
-          return;
+      const data = await response.json();
+
+      if (!response.ok) {
+        if (response.status === 429) {
+          setGptError(
+            `Rate limit exceeded. Contact the administrator at nikos@pountzas.gr`
+          );
+        } else {
+          setGptError(
+            data.error || "An error occurred while generating the recipe"
+          );
         }
-
-        setReplyFromGpt(data.content);
-      } catch (error) {
-        console.error("Error calling API:", error);
-        setGptError(
-          "Failed to connect to the recipe generation service. Please try again." +
-            error
-        );
         setLoadingPrompt(false);
+        return;
       }
+
+      const parsed = parseRecipeResponse(data.content ?? "");
+      if (!parsed.ok) {
+        setGptError(parsed.error);
+        setLoadingPrompt(false);
+        return;
+      }
+
+      const recipeRef = doc(db, "users", session?.user?.email!, "recipes", id);
+      await updateDoc(recipeRef, {
+        id,
+        title: parsed.recipe.title,
+        prompt,
+        ingredients: parsed.recipe.ingredients,
+        instructions: parsed.recipe.instructions,
+      });
+
+      setMainTitle(parsed.recipe.title);
+      setLoadingPrompt(false);
+    } catch (error) {
+      console.error("Error calling API:", error);
+      setGptError(
+        "Failed to connect to the recipe generation service. Please try again." +
+          error
+      );
+      setLoadingPrompt(false);
     }
   };
 
