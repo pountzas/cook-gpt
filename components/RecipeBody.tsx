@@ -1,10 +1,8 @@
 "use client";
 
-import { collection, query } from "firebase/firestore";
 import { useSession } from "next-auth/react";
-import { useCollection } from "react-firebase-hooks/firestore";
 import { useRecipeStore } from "../stores/recipeStore";
-import { db } from "../firebase";
+import { useUserRecipe } from "../lib/firebase/recipes";
 
 import { motion } from "framer-motion";
 
@@ -15,19 +13,16 @@ type Props = {
 function RecipeBody({ id }: Props) {
   const { data: session } = useSession();
   const { premadeIngredients, premadeInstructions } = useRecipeStore();
+  const [recipe] = useUserRecipe(session?.user?.email, id);
 
-  const [recipes] = useCollection(
-    session && query(collection(db, "users", session?.user?.email!, "recipes"))
-  );
-
-  // Find the current recipe from Firebase
-  const currentRecipe = recipes?.docs.find((recipe) => recipe.id === id);
-  const recipeIngredients = currentRecipe?.data()?.ingredients || [];
-  const recipeInstructions = currentRecipe?.data()?.instructions || [];
+  const recipeIngredients = recipe?.ingredients ?? [];
+  const recipeInstructions = recipe?.instructions ?? [];
 
   // Use premade if available, otherwise use Firebase data
-  const ingredients = premadeIngredients.length > 0 ? premadeIngredients : recipeIngredients;
-  const instructions = premadeInstructions.length > 0 ? premadeInstructions : recipeInstructions;
+  const ingredients =
+    premadeIngredients.length > 0 ? premadeIngredients : recipeIngredients;
+  const instructions =
+    premadeInstructions.length > 0 ? premadeInstructions : recipeInstructions;
 
   return (
     <div className="grid gap-8 pb-8 md:grid-cols-2">

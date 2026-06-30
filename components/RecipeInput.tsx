@@ -1,21 +1,17 @@
 "use client";
 
 import { PaperAirplaneIcon } from "@heroicons/react/24/solid";
-import {
-  collection,
-  orderBy,
-  query,
-  doc,
-  updateDoc,
-  deleteDoc,
-} from "firebase/firestore";
+import { deleteDoc, updateDoc } from "firebase/firestore";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import { FormEvent, useEffect, useState } from "react";
+import { FormEvent, useState } from "react";
 import { Activity } from "react";
-import { useCollection } from "react-firebase-hooks/firestore";
 import { useRecipeStore } from "../stores/recipeStore";
-import { db } from "../firebase";
+import {
+  findRecipeIdByPrompt,
+  useUserRecipe,
+  userRecipeDocRef,
+} from "../lib/firebase/recipes";
 import { parseRecipeResponse } from "../lib/parseRecipeResponse";
 
 type Props = {
@@ -24,56 +20,35 @@ type Props = {
 
 function RecipeInput({ id }: Props) {
   const [prompt, setPrompt] = useState<string>("");
-  const [hidden, setHidden] = useState<boolean>(true);
   const [gptError, setGptError] = useState<string>("");
   const [loadingPrompt, setLoadingPrompt] = useState<boolean>(false);
   const { setMainTitle } = useRecipeStore();
 
   const router = useRouter();
   const { data: session } = useSession();
+  const userEmail = session?.user?.email;
 
-  const [recipes] = useCollection(
-    session &&
-      query(
-        collection(db, "users", session.user?.email!, "recipes"),
-        orderBy("createdAt", "desc")
-      )
-  );
-
-  useEffect(() => {
-    if (!recipes) return;
-
-    const recipe = recipes.docs.find((recipe) => recipe.id === id);
-    if (recipe?.data().title === "") {
-      setHidden(false);
-    } else {
-      setHidden(true);
-    }
-  }, [recipes, id]);
+  const [recipe] = useUserRecipe(userEmail, id);
+  const hidden = recipe === undefined ? true : recipe.title !== "";
 
   const handlePromtType = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoadingPrompt(true);
     setGptError("");
 
-    if (!prompt) {
+    if (!prompt || !userEmail) {
       setLoadingPrompt(false);
       return;
     }
 
-    // when prompt already exist in firebase redirect to the id recipe page and delete the new one
-    if (recipes?.docs.find((recipe) => recipe.data().prompt === prompt)) {
-      const recipeId = recipes.docs.find(
-        (recipe) => recipe.data().prompt === prompt
-      )?.id;
-
-      router.replace(`/recipes/${recipeId}`);
-      await deleteDoc(doc(db, "users", session?.user?.email!, "recipes", id));
+    const existingRecipeId = await findRecipeIdByPrompt(userEmail, prompt);
+    if (existingRecipeId) {
+      router.replace(`/recipes/${existingRecipeId}`);
+      await deleteDoc(userRecipeDocRef(userEmail, id));
       setLoadingPrompt(false);
       return;
     }
 
-    // if prompt is a url
     if (prompt.includes("https://")) {
       setGptError("URL prompts are not available yet");
       setLoadingPrompt(false);
@@ -112,8 +87,7 @@ function RecipeInput({ id }: Props) {
         return;
       }
 
-      const recipeRef = doc(db, "users", session?.user?.email!, "recipes", id);
-      await updateDoc(recipeRef, {
+      await updateDoc(userRecipeDocRef(userEmail, id), {
         id,
         title: parsed.recipe.title,
         prompt,

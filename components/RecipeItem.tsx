@@ -4,12 +4,12 @@ import {
   ListBulletIcon,
   TrashIcon
 } from "@heroicons/react/24/outline";
-import { deleteDoc, doc } from "firebase/firestore";
+import { deleteDoc } from "firebase/firestore";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { db } from "../firebase";
+import { userRecipeDocRef } from "../lib/firebase/recipes";
 import { useRecipeStore } from "../stores/recipeStore";
 
 type RecipeItemProps = {
@@ -38,7 +38,10 @@ function RecipeItem({ id, title }: RecipeItemProps) {
   }, [pathname]);
 
   const removeRecipe = async () => {
-    await deleteDoc(doc(db, "users", session?.user?.email!, "recipes", id));
+    const email = session?.user?.email;
+    if (!email) return;
+
+    await deleteDoc(userRecipeDocRef(email, id));
     router.replace("/");
   };
 
