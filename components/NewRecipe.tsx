@@ -26,6 +26,7 @@ function NewRecipe() {
         title: "",
         ingredients: [],
         instructions: [],
+        timesCooked: 0,
         createdAt: serverTimestamp(),
       }
     );

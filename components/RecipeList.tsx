@@ -15,6 +15,7 @@ function RecipeList() {
           key={recipe.id}
           id={recipe.id}
           title={recipe.data().title}
+          timesCooked={recipe.data().timesCooked}
         />
       ))}
     </>
