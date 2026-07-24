@@ -17,6 +17,7 @@ export type Recipe = {
   prompt: string;
   ingredients: string[];
   instructions: string[];
+  timesCooked?: number;
   userId?: string;
 };
 
