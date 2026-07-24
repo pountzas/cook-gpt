@@ -1,12 +1,13 @@
 "use client";
 
 import { FireIcon } from "@heroicons/react/24/solid";
-import { increment, updateDoc } from "firebase/firestore";
+import { runTransaction } from "firebase/firestore";
 import { AnimatePresence, motion } from "framer-motion";
-import { useSession } from "next-auth/react";
 import { useState } from "react";
-import { useUserRecipe, userRecipeDocRef } from "../lib/firebase/recipes";
+import { db } from "../firebase";
+import { userRecipeDocRef, type Recipe } from "../lib/firebase/recipes";
 import { useRecipeStore } from "../stores/recipeStore";
+import { useRecipeDocument } from "./RecipeDocumentProvider";
 
 type Props = {
   id: string;
@@ -31,9 +32,8 @@ function SteamWisp({ delay, x }: { delay: number; x: number }) {
 }
 
 function CookedCounter({ id }: Props) {
-  const { data: session } = useSession();
+  const { email, recipe } = useRecipeDocument();
   const { premadeIngredients, premadeInstructions } = useRecipeStore();
-  const [recipe] = useUserRecipe(session?.user?.email, id);
   const [saving, setSaving] = useState(false);
   const [burstKey, setBurstKey] = useState(0);
 
@@ -45,22 +45,32 @@ function CookedCounter({ id }: Props) {
       (recipe.instructions?.length ?? 0) > 0);
   const timesCooked = recipe?.timesCooked ?? 0;
 
-  if (isPremade || !session?.user?.email || !hasContent) {
+  if (isPremade || !email || !hasContent) {
     return null;
   }
 
-  const email = session.user.email;
-
   const adjustCount = async (delta: 1 | -1) => {
     if (saving) return;
-    if (delta === -1 && timesCooked <= 0) return;
 
     setSaving(true);
     try {
-      await updateDoc(userRecipeDocRef(email, id), {
-        timesCooked: increment(delta),
+      let didIncrement = false;
+
+      await runTransaction(db, async (transaction) => {
+        const ref = userRecipeDocRef(email, id);
+        const snapshot = await transaction.get(ref);
+        const current =
+          (snapshot.data() as Recipe | undefined)?.timesCooked ?? 0;
+
+        if (delta === -1 && current <= 0) {
+          return;
+        }
+
+        transaction.update(ref, { timesCooked: current + delta });
+        didIncrement = delta === 1;
       });
-      if (delta === 1) {
+
+      if (didIncrement) {
         setBurstKey((key) => key + 1);
       }
     } catch (error) {

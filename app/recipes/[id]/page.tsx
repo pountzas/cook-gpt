@@ -1,6 +1,7 @@
 import CookedCounter from "../../../components/CookedCounter";
 import HomeButton from "../../../components/HomeButton";
 import RecipeBody from "../../../components/RecipeBody";
+import { RecipeDocumentProvider } from "../../../components/RecipeDocumentProvider";
 import RecipeInput from "../../../components/RecipeInput";
 import RecipeTitle from "../../../components/RecipeTitle";
 
@@ -15,11 +16,13 @@ async function RecipePage({ params }: RecipePageProps) {
   
   return (
     <div className="flex flex-col items-center justify-between h-screen py-8 overflow-hidden relative">
-      <HomeButton />
-      <RecipeTitle id={id} />
-      <CookedCounter id={id} />
-      <RecipeBody id={id} />
-      <RecipeInput id={id} />
+      <RecipeDocumentProvider id={id}>
+        <HomeButton />
+        <RecipeTitle id={id} />
+        <CookedCounter id={id} />
+        <RecipeBody id={id} />
+        <RecipeInput id={id} />
+      </RecipeDocumentProvider>
     </div>
   );
 }
