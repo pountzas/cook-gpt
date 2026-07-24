@@ -36,4 +36,18 @@ describe("parseRecipeResponse", () => {
       error: "Could not parse recipe from response",
     });
   });
+
+  it("normalizes CRLF endings and drops blank lines", () => {
+    const crlfResponse =
+      "Title: Pasta\r\nIngredients:\r\n\r\n  noodles  \r\n\r\nsauce\r\nInstructions:\r\n\r\nBoil\r\n\r\n  Drain  \r\n";
+
+    expect(parseRecipeResponse(crlfResponse)).toEqual({
+      ok: true,
+      recipe: {
+        title: "Pasta",
+        ingredients: ["noodles", "sauce"],
+        instructions: ["Boil", "Drain"],
+      },
+    });
+  });
 });

@@ -9,10 +9,10 @@ import { Activity } from "react";
 import { useRecipeStore } from "../stores/recipeStore";
 import {
   findRecipeIdByPrompt,
-  useUserRecipe,
   userRecipeDocRef,
 } from "../lib/firebase/recipes";
 import { parseRecipeResponse } from "../lib/parseRecipeResponse";
+import { useRecipeDocument } from "./RecipeDocumentProvider";
 
 type Props = {
   id: string;
@@ -26,9 +26,7 @@ function RecipeInput({ id }: Props) {
 
   const router = useRouter();
   const { data: session } = useSession();
-  const userEmail = session?.user?.email;
-
-  const [recipe] = useUserRecipe(userEmail, id);
+  const { email: userEmail, recipe } = useRecipeDocument();
   const hidden = recipe === undefined ? true : recipe.title !== "";
 
   const handlePromtType = async (e: FormEvent<HTMLFormElement>) => {
@@ -41,21 +39,19 @@ function RecipeInput({ id }: Props) {
       return;
     }
 
-    const existingRecipeId = await findRecipeIdByPrompt(userEmail, prompt);
-    if (existingRecipeId) {
-      router.replace(`/recipes/${existingRecipeId}`);
-      await deleteDoc(userRecipeDocRef(userEmail, id));
-      setLoadingPrompt(false);
-      return;
-    }
-
-    if (prompt.includes("https://")) {
-      setGptError("URL prompts are not available yet");
-      setLoadingPrompt(false);
-      return;
-    }
-
     try {
+      const existingRecipeId = await findRecipeIdByPrompt(userEmail, prompt);
+      if (existingRecipeId) {
+        router.replace(`/recipes/${existingRecipeId}`);
+        await deleteDoc(userRecipeDocRef(userEmail, id));
+        return;
+      }
+
+      if (prompt.includes("https://")) {
+        setGptError("URL prompts are not available yet");
+        return;
+      }
+
       const response = await fetch("/api/generate-recipe", {
         method: "POST",
         headers: {
@@ -76,14 +72,12 @@ function RecipeInput({ id }: Props) {
             data.error || "An error occurred while generating the recipe"
           );
         }
-        setLoadingPrompt(false);
         return;
       }
 
       const parsed = parseRecipeResponse(data.content ?? "");
       if (!parsed.ok) {
         setGptError(parsed.error);
-        setLoadingPrompt(false);
         return;
       }
 
@@ -96,13 +90,13 @@ function RecipeInput({ id }: Props) {
       });
 
       setMainTitle(parsed.recipe.title);
-      setLoadingPrompt(false);
     } catch (error) {
       console.error("Error calling API:", error);
       setGptError(
         "Failed to connect to the recipe generation service. Please try again." +
           error
       );
+    } finally {
       setLoadingPrompt(false);
     }
   };

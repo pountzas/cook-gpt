@@ -2,6 +2,7 @@ import {
   collection,
   doc,
   getDocs,
+  limit,
   orderBy,
   query,
   where,
@@ -56,7 +57,11 @@ export async function findRecipeIdByPrompt(
   prompt: string
 ): Promise<string | null> {
   const snapshot = await getDocs(
-    query(userRecipesCollection(email), where("prompt", "==", prompt))
+    query(
+      userRecipesCollection(email),
+      where("prompt", "==", prompt),
+      limit(1)
+    )
   );
   return snapshot.docs[0]?.id ?? null;
 }

@@ -1,8 +1,7 @@
 "use client";
 
-import { useSession } from "next-auth/react";
 import { useRecipeStore } from "../stores/recipeStore";
-import { useUserRecipe } from "../lib/firebase/recipes";
+import { useRecipeDocument } from "./RecipeDocumentProvider";
 
 import { motion } from "framer-motion";
 
@@ -10,10 +9,9 @@ type Props = {
   id: string;
 };
 
-function RecipeBody({ id }: Props) {
-  const { data: session } = useSession();
+function RecipeBody(_props: Props) {
   const { premadeIngredients, premadeInstructions } = useRecipeStore();
-  const [recipe] = useUserRecipe(session?.user?.email, id);
+  const { recipe } = useRecipeDocument();
 
   const recipeIngredients = recipe?.ingredients ?? [];
   const recipeInstructions = recipe?.instructions ?? [];
