@@ -12,7 +12,6 @@
   "dependencies": {
     "@heroicons/react": "^2.0.16",
     "axios": "^1.18.0",
-    "caniuse-lite": "^1.0.30001751",
     "debug": "^4.3.4",
     "encoding": "^0.1.13",
     "eslint-config-next": "^16.2.6",
@@ -68,5 +67,13 @@
     "serialize-javascript": "^7.0.5",
     "uuid": "^11.1.1",
     "websocket-driver": "^0.7.5"
+  },
+  "allowScripts": {
+    "@firebase/util@1.13.0": true,
+    "core-js-pure@3.47.0": true,
+    "esbuild@0.28.1": true,
+    "protobufjs@7.6.5": true,
+    "sharp@0.34.5": true,
+    "unrs-resolver@1.11.1": true
   }
 }
