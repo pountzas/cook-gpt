@@ -42,7 +42,7 @@
     "eslint": "^9.38.0",
     "jest": "^30.2.0",
     "jest-environment-jsdom": "^30.2.0",
-    "postcss": "^8.5.10",
+    "postcss": "^8.5.18",
     "storybook": "^10.2.10",
     "tailwind-merge": "^3.4.0",
     "tailwind-scrollbar": "^3.0.0",
@@ -55,16 +55,17 @@
     "@grpc/grpc-js": "^1.9.16",
     "@protobufjs/utf8": "^1.1.1",
     "ajv": "^8.18.0",
-    "brace-expansion": "^2.0.3",
+    "brace-expansion": "^2.1.3",
     "fast-uri": "^3.1.2",
     "flatted": "^3.4.2",
     "lodash": "^4.18.0",
     "minimatch": "^9.0.7",
     "picomatch": "^4.0.4",
-    "postcss": "^8.5.10",
+    "postcss": "^8.5.18",
     "protobufjs": "^7.6.5",
     "qs": "^6.15.2",
     "serialize-javascript": "^7.0.5",
+    "sharp": "^0.35.0",
     "uuid": "^11.1.1",
     "websocket-driver": "^0.7.5"
   },
@@ -73,7 +74,7 @@
     "core-js-pure@3.47.0": true,
     "esbuild@0.28.1": true,
     "protobufjs@7.6.5": true,
-    "sharp@0.34.5": true,
+    "sharp@0.35.3": true,
     "unrs-resolver@1.11.1": true
   }
 }
