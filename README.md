@@ -25,7 +25,7 @@ CookGPT is a modern web application that generates custom recipes using OpenAI's
 
 ### Prerequisites
 
-- Node.js 18+
+- Node.js 20.9 or later
 - npm, yarn, or pnpm
 - OpenAI API key
 - Firebase project
